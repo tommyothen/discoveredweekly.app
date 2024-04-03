@@ -1,29 +1,27 @@
-# Create T3 App
+# Discovered Weekly
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Discovered Weekly is a web application that archives your personalized Spotify Discovery Weekly playlist every Tuesday at 12 PM UTC. It allows you to log in with your Spotify account and keeps a record of your weekly playlists, providing a convenient way to revisit and explore new music discoveries over time.
 
-## What's next? How do I make an app with this?
+## Features
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- **Spotify Authentication**: Log in securely with your Spotify account.
+- **Automatic Archiving**: Your Discovery Weekly playlist is automatically archived every Tuesday at 12 PM UTC.
+- **Playlist History**: Access your archived playlists from previous weeks.
+- **User-friendly Interface**: Clean and intuitive design for an enjoyable user experience.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Technologies Used
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- **React**: JavaScript library for building user interfaces.
+- **TypeScript**: Superset of JavaScript that adds optional static typing.
+- **Tailwind CSS**: Utility-first CSS framework for rapid UI development.
+- **Prisma**: Next-generation ORM for Node.js and TypeScript.
+- **Supabase Edge Functions**: Serverless functions hosted by Supabase.
+- **Vercel**: Cloud platform for deploying serverless functions and hosting the application.
 
-## Learn More
+## About the Developer
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+Discovered Weekly is created and maintained by me. The source code is available on GitHub, but running the app locally is not recommended. The project is open-source to provide transparency and allow others to review the code.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## License
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+This project is licensed under the [MIT License](LICENSE).
