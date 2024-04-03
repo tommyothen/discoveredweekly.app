@@ -10,6 +10,7 @@ import {
 } from "~/server/utils/lib";
 import type { Session } from "next-auth";
 import SuperJSON from "superjson";
+import { env } from "~/env";
 
 async function getDashboardStats(session: Session) {
   const user = session.user;
@@ -214,50 +215,20 @@ export default async function dashboard(ctx: GetServerSidePropsContext) {
       } as const;
     }
 
-    const discoverWeeklyItemsResponse = await SpotifyAPI.playlists.tracks.query(
-      accessToken,
+    // Instead of carrying on here, we are going to send it to an external edge function
+    // to fetch the playlist items and save them to the database. This is to avoid the
+    // 10 second timeout that Vercel has for serverless functions.
+    void fetch(
+      `${env.SUPABASE_URL}/functions/v1/backup`,
       {
-        playlist_id: discoverWeeklyId,
-        limit: 50,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.SUPABASE_ANON_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: user.id }),
       },
-    );
-
-    if (
-      discoverWeeklyItemsResponse === undefined ||
-      discoverWeeklyItemsResponse.status !== 200
-    ) {
-      throw new Error(
-        `Error fetching playlist items: ${discoverWeeklyItemsResponse?.status}`,
-      );
-    }
-
-    const playlistTrackObjects = discoverWeeklyItemsResponse.data.items
-      .map((item) => {
-        if (item.track.type === "track") {
-          return item.track;
-        }
-      })
-      .filter((item): item is TrackObject => item !== undefined);
-
-    const backup = await db.discoveredWeeklyBackup.create({
-      data: {
-        year: new Date().getFullYear(),
-        week: getWeekNumber(new Date()),
-        userId: user.id,
-      },
-    });
-
-    await Promise.all(
-      playlistTrackObjects.map(async (track) => {
-        const spotifyTrack = await saveTrackAndArtists(track);
-        await db.discoveredWeeklyBackupTrack.create({
-          data: {
-            backupId: backup.backupId,
-            trackId: spotifyTrack.id,
-          },
-        });
-      }),
-    );
+    )
 
     return {
       props: {

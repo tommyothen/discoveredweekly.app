@@ -134,7 +134,7 @@ export default function Dashboard(
 }
 
 export const config: PageConfig = {
-  maxDuration: 60,
+  maxDuration: 10,
 }
 
 export const getServerSideProps = (async (ctx) => {

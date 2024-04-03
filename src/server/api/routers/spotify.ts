@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { env } from "~/env";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import {
@@ -184,91 +185,19 @@ export const spotifyRouter = createTRPCRouter({
       return backupFind;
     }
 
-    // Refresh the access token just in case it's expired
-    const account = await db.account.findFirst({
-      where: {
-        userId,
-      },
-      select: {
-        providerAccountId: true,
-        refresh_token: true,
-      },
-    });
-
-    if (!account?.refresh_token) {
-      return {
-        error: "No account found",
-      };
-    }
-
-    const accessToken = await refreshAccessToken(
-      account.providerAccountId,
-      account.refresh_token,
-    );
-
-    if (!accessToken) {
-      return {
-        error: "Error refreshing access token",
-      };
-    }
-
-    // Get the playlist ID
-    const discoverWeeklyId = await getDiscoverWeeklyPlaylistId(
-      userId,
-      accessToken,
-    );
-
-    if (!discoverWeeklyId) {
-      return {
-        error: "Error getting Discover Weekly playlist ID",
-      };
-    }
-
-    const discoverWeeklyItemsResponse = await SpotifyAPI.playlists.tracks.query(
-      accessToken,
+    // Instead of carrying on here, we are going to send it to an external edge function
+    // to fetch the playlist items and save them to the database. This is to avoid the
+    // 10 second timeout that Vercel has for serverless functions.
+    void fetch(
+      `${env.SUPABASE_URL}/functions/v1/backup`,
       {
-        playlist_id: discoverWeeklyId,
-        limit: 50,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.SUPABASE_ANON_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: ctx.session.user.id }),
       },
     );
-
-    if (
-      discoverWeeklyItemsResponse === undefined ||
-      discoverWeeklyItemsResponse.status !== 200
-    ) {
-      return {
-        error: `Error fetching playlist items: ${discoverWeeklyItemsResponse?.status}`,
-      };
-    }
-
-    const playlistTrackObjects = discoverWeeklyItemsResponse.data.items
-      .map((item) => {
-        if (item.track.type === "track") {
-          return item.track;
-        }
-      })
-      .filter((item): item is TrackObject => item !== undefined);
-
-    const backup = await db.discoveredWeeklyBackup.create({
-      data: {
-        userId,
-        week,
-        year,
-      },
-    });
-
-    await Promise.all(
-      playlistTrackObjects.map(async (track) => {
-        const spotifyTrack = await saveTrackAndArtists(track);
-        await db.discoveredWeeklyBackupTrack.create({
-          data: {
-            backupId: backup.backupId,
-            trackId: spotifyTrack.id,
-          },
-        });
-      }),
-    );
-
-    return backup;
   }),
 });
