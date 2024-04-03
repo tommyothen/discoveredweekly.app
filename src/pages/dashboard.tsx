@@ -1,5 +1,5 @@
 import { Layout } from "~/components/shared/Layout";
-import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import type { GetServerSideProps, InferGetServerSidePropsType, PageConfig } from "next";
 import dashboardServerSideProps from "~/server/utils/getServerSideProps/dashboard";
 import { PromptForPlaylistId } from "~/components/PromptForPlaylistId";
 import Head from "next/head";
@@ -131,6 +131,10 @@ export default function Dashboard(
       </Layout>
     </>
   );
+}
+
+export const config: PageConfig = {
+  maxDuration: 60,
 }
 
 export const getServerSideProps = (async (ctx) => {
