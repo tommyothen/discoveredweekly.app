@@ -2,12 +2,7 @@ import { z } from "zod";
 import { env } from "~/env";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import {
-  getDiscoverWeeklyPlaylistId,
-  refreshAccessToken,
-  saveTrackAndArtists,
-} from "~/server/utils/lib";
-import { SpotifyAPI, type TrackObject } from "~/utils/SpotifyAPI";
+import { SpotifyAPI } from "~/utils/SpotifyAPI";
 import { getWeekNumber } from "~/utils/lib";
 
 type getDiscoverWeeklyPlaylistIdResult = [boolean, string];

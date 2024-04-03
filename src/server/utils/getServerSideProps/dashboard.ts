@@ -1,12 +1,10 @@
 import { db } from "~/server/db";
 import { getServerAuthSession } from "~/server/auth";
-import { SpotifyAPI, type TrackObject } from "~/utils/SpotifyAPI";
+import { SpotifyAPI } from "~/utils/SpotifyAPI";
 import type { GetServerSidePropsContext } from "next";
-import { getWeekNumber } from "~/utils/lib";
 import {
   getDiscoverWeeklyPlaylistId,
   refreshAccessToken,
-  saveTrackAndArtists,
 } from "~/server/utils/lib";
 import type { Session } from "next-auth";
 import SuperJSON from "superjson";

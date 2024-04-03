@@ -1,4 +1,4 @@
-import { type LucideIcon, Home, Settings, User } from "lucide-react";
+import { type LucideIcon, Home, Settings } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import { useRouter } from "next/router";
 

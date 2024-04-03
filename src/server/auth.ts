@@ -11,24 +11,24 @@ import Spotify from "next-auth/providers/spotify";
 import { env } from "~/env";
 import { db } from "~/server/db";
 
-const buildSpotifyAuthURL = () => {
-  const spotifyBaseUrl = "https://accounts.spotify.com/authorize";
-  const spotifyScopes = [
-    // "user-read-playback-state",
-    // "user-modify-playback-state",
-    // "user-read-currently-playing",
-    // "playlist-read-private",
-    // "playlist-modify-private",
-    // "playlist-modify-public",
-    "user-read-email",
-  ] as const;
+// const buildSpotifyAuthURL = () => {
+//   const spotifyBaseUrl = "https://accounts.spotify.com/authorize";
+//   const spotifyScopes = [
+//     // "user-read-playback-state",
+//     // "user-modify-playback-state",
+//     // "user-read-currently-playing",
+//     // "playlist-read-private",
+//     // "playlist-modify-private",
+//     // "playlist-modify-public",
+//     "user-read-email",
+//   ] as const;
 
-  const params = new URLSearchParams({
-    scope: spotifyScopes.join("%20"),
-  });
+//   const params = new URLSearchParams({
+//     scope: spotifyScopes.join("%20"),
+//   });
 
-  return `${spotifyBaseUrl}?${params.toString()}`;
-};
+//   return `${spotifyBaseUrl}?${params.toString()}`;
+// };
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
