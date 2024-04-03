@@ -1,0 +1,141 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
+}
+
+// Necessary for Next auth
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? // @db.Text
+    access_token      String? // @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? // @db.Text
+    session_state     String?
+    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+    id            String                   @id @default(cuid())
+    createdAt     DateTime                 @default(now())
+    name          String?
+    email         String?                  @unique
+    emailVerified DateTime?
+    image         String?
+    accounts      Account[]
+    sessions      Session[]
+    backups       DiscoveredWeeklyBackup[]
+    UserSettings  UserSettings[]
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+model UserSettings {
+    userId String @id
+    user   User   @relation(fields: [userId], references: [id])
+
+    weeklyBackup            Boolean @default(true)
+    automaticSyncToPlaylist Boolean @default(false)
+}
+
+// Models for the application
+model UserSpotifyPlaylistIds {
+    userId           String @id
+    discoverWeeklyId String
+}
+
+model SpotifyTrack {
+    id   String @id
+    name String
+
+    uri         String
+    coverArtUrl String
+
+    colors String[] // 2 colors extracted from the cover art
+
+    // A track can have multiple artists
+    SpotifyTrackArtists SpotifyTrackArtists[]
+
+    // A track can be in multiple backups
+    backups DiscoveredWeeklyBackupTrack[]
+}
+
+model SpotifyArtist {
+    id   String @id
+    name String
+
+    uri      String
+    imageUrl String
+
+    // An artist can have multiple tracks
+    SpotifyTrackArtists SpotifyTrackArtists[]
+}
+
+// Many to many relationship between tracks and artists
+model SpotifyTrackArtists {
+    trackId  String
+    artistId String
+
+    track  SpotifyTrack  @relation(fields: [trackId], references: [id])
+    artist SpotifyArtist @relation(fields: [artistId], references: [id])
+
+    @@id([trackId, artistId])
+}
+
+model DiscoveredWeeklyBackup {
+    backupId String @id @default(cuid())
+
+    // The time the backup was created
+    year      Int
+    week      Int
+    createdAt DateTime @default(now())
+
+    // A backup can have multiple tracks
+    tracks DiscoveredWeeklyBackupTrack[]
+
+    // The user that this backup belongs to
+    user   User   @relation(fields: [userId], references: [id])
+    userId String
+
+    @@unique([year, week, userId])
+}
+
+// Many to many relationship between backups and tracks
+model DiscoveredWeeklyBackupTrack {
+    backupId String
+    trackId  String
+
+    backup DiscoveredWeeklyBackup @relation(fields: [backupId], references: [backupId])
+    track  SpotifyTrack           @relation(fields: [trackId], references: [id])
+
+    @@id([backupId, trackId])
+}

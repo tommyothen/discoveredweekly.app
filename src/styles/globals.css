@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  background-color: #121212;
+}
+
+:root {
+  --backup-top-color: #121212;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #121212;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #1db954;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #1ed760;
+}
+
+.gradient-text {
+  background-color: #1db954;
+  background-image: linear-gradient(45deg, #1db954, #1ed760, #1db954);
+  background-size: 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: gradient-shift 5s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.bg-transition {
+  transition: background-image 5s ease-in-out;
+}
